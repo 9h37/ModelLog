@@ -1,10 +1,18 @@
 # -*- coding: utf-8 -*-
 from hashlib import sha256
+import logging
 import settings
 import json
 
 def at_log(log):
-    for required in (
+    """
+    Log a JSON-formated message containing the content of a dictionary and a
+    hash of its values and a secret key.
+    The \"signature\" dictionary key is overwritten.
+    A warning is made if some keys are missing.
+    """
+
+    for key in (
         'event_id',             #5.1.1. Event ID                        required
         'event_action_code',    #5.1.2. Event Action Code,              optional
         'event_date',           #5.1.3. Event Date/Time                 required
@@ -15,8 +23,8 @@ def at_log(log):
         'instance_id_type',     #5.5.4. Participant Object ID Type Code required
         'instance_id',          #5.5.6. Participant Object ID           required
         ):
-        if required not in log.keys():
-            print('warning: ' + required + ' datafield not given in the log message')
+        if key not in log.keys():
+            logging.warning(key + ' key missing in the log message')
 
     log_keys = log.keys()
     log_keys.sort()

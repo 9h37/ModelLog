@@ -7,8 +7,13 @@ import socket
 import at_log
 
 class ModelLog(models.Model):
-
-    #RFC3881: http://www.faqs.org/rfcs/rfc3881.html
+    """
+    Log various informations relative to the event and its source that led to
+    the save() or delete() call along with any data that may or may not appear
+    necessary to the RFC3881 compliance, ie. data about the object instance.
+    RFC3881 compliance of the log messages is required.
+    RFC3881 url: http://www.faqs.org/rfcs/rfc3881.html
+    """
 
     LOG_ACTION_CREATE   = 'C'
     LOG_ACTION_READ     = 'R'
@@ -29,13 +34,13 @@ class ModelLog(models.Model):
         log['source_id'] = socket.gethostname()
         log['instance_id'] = self.id
         try:
-            log['instance_id_type'] = getattr(self, 'Meta').id_type  
+            log['instance_id_type'] = str(getattr(self, 'Meta').id_type)
         except:
-            log['instance_id_type'] = -1
+            log['instance_id_type'] = 'unknown'
         if request is not None:
             log['access_point_ip'] = request.get_host()
         else:
-            log['access_point_ip'] = 'warning_unknown_ip'
+            log['access_point_ip'] = 'unknown'
         return log
 
     def save(self, event_id, user_id, request = None):
@@ -49,7 +54,7 @@ class ModelLog(models.Model):
             at_log.at_log(log)
             raise e
         else:
-            if str(prev_id) == 'None':
+            if prev_id is None:
                 log['event_action_code'] = self.LOG_ACTION_CREATE
             else:
                 log['event_action_code'] = self.LOG_ACTION_UPDATE
@@ -68,4 +73,3 @@ class ModelLog(models.Model):
             raise e
         else:
             at_log.at_log(log)
-
