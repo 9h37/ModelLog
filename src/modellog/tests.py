@@ -30,7 +30,7 @@ class ModelLogTestCase(TestCase):
             log['instance_id_type']     #5.5.4. Participant Object ID Type Code required
             log['instance_id']          #5.5.6. Participant Object ID           required
         except Exception as e:
-            raise e #One of the required keys (see above) is missing
+            raise e #One of the keys (see above) is missing
         log_keys = log.keys()
         log_keys.sort()
         log_hash = sha256(settings.SECRET_KEY)

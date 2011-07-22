@@ -16,6 +16,9 @@ class ModelLog(models.Model):
     LOG_ACTION_DELETE   = 'D'
     LOG_ACTION_EXECUTE  = 'E'
 
+    LOG_OUTCOME_SUCCESS = 0
+    LOG_OUTCOME_ERROR   = 12
+
     def __unicode__(self):
         return str(self.id)
 
@@ -40,10 +43,10 @@ class ModelLog(models.Model):
         prev_id = self.id
         try:
             super(ModelLog, self).save()
-            log['event_outcome'] = 0
+            log['event_outcome'] = LOG_OUTCOME_SUCCESS
         except Exception as e:
             raise e
-            log['event_outcome'] = 12
+            log['event_outcome'] = LOG_OUTCOME_ERROR
         if str(prev_id) == 'None':
             log['event_action_code'] = self.LOG_ACTION_CREATE
         else:
@@ -56,9 +59,9 @@ class ModelLog(models.Model):
         self.__log_data_collect(log, event_id, user_id, request)
         try:
             super(ModelLog, self).delete()
-            log['event_outcome'] = 0
+            log['event_outcome'] = LOG_OUTCOME_SUCCESS
         except Exception as e:
             raise e
-            log['event_outcome'] = 12
+            log['event_outcome'] = LOG_OUTCOME_ERROR
         at_log(log)
 
