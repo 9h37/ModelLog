@@ -45,14 +45,16 @@ class ModelLog(models.Model):
             super(ModelLog, self).save()
             log['event_outcome'] = self.LOG_OUTCOME_SUCCESS
         except Exception as e:
-            raise e
             log['event_outcome'] = self.LOG_OUTCOME_ERROR
-        if str(prev_id) == 'None':
-            log['event_action_code'] = self.LOG_ACTION_CREATE
+            at_log(log)
+            raise e
         else:
-            log['event_action_code'] = self.LOG_ACTION_UPDATE
-        self.__log_data_collect(log, event_id, user_id, request)
-        at_log(log)
+            if str(prev_id) == 'None':
+                log['event_action_code'] = self.LOG_ACTION_CREATE
+            else:
+                log['event_action_code'] = self.LOG_ACTION_UPDATE
+            self.__log_data_collect(log, event_id, user_id, request)
+            at_log(log)
 
     def delete(self, event_id, user_id, request = HttpRequest()):
         log = {'event_action_code': self.LOG_ACTION_DELETE}
@@ -61,7 +63,9 @@ class ModelLog(models.Model):
             super(ModelLog, self).delete()
             log['event_outcome'] = self.LOG_OUTCOME_SUCCESS
         except Exception as e:
-            raise e
             log['event_outcome'] = self.LOG_OUTCOME_ERROR
-        at_log(log)
+            at_log(log)
+            raise e
+        else:
+            at_log(log)
 
