@@ -46,7 +46,7 @@ class ModelLog(models.Model):
             log['event_outcome'] = self.LOG_OUTCOME_SUCCESS
         except Exception as e:
             log['event_outcome'] = self.LOG_OUTCOME_ERROR
-            at_log(log)
+            at_log.at_log(log)
             raise e
         else:
             if str(prev_id) == 'None':
@@ -64,7 +64,7 @@ class ModelLog(models.Model):
             log['event_outcome'] = self.LOG_OUTCOME_SUCCESS
         except Exception as e:
             log['event_outcome'] = self.LOG_OUTCOME_ERROR
-            at_log(log)
+            at_log.at_log(log)
             raise e
         else:
             at_log.at_log(log)
