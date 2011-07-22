@@ -2,9 +2,9 @@
 from django.db import models
 from django.http import HttpRequest
 from django.conf import settings
-from datetime import datetime, tzinfo
-from socket import gethostname
-from at_log import at_log
+from datetime import datetime
+import socket
+import at_log
 
 class ModelLog(models.Model):
 
@@ -26,19 +26,19 @@ class ModelLog(models.Model):
         log['event_id'] = event_id
         log['event_date'] = datetime.utcnow().isoformat()
         log['user_id'] = user_id
-        log['source_id'] = gethostname()
+        log['source_id'] = socket.gethostname()
         log['instance_id'] = self.id
         try:
             log['instance_id_type'] = getattr(self, 'Meta').id_type  
         except:
             log['instance_id_type'] = -1
-        try:
+        if request is not None:
             log['access_point_ip'] = request.get_host()
-        except:
+        else:
             log['access_point_ip'] = 'warning_unknown_ip'
         return log
 
-    def save(self, event_id, user_id, request = HttpRequest()):
+    def save(self, event_id, user_id, request = None):
         log = {}
         prev_id = self.id
         try:
@@ -54,9 +54,9 @@ class ModelLog(models.Model):
             else:
                 log['event_action_code'] = self.LOG_ACTION_UPDATE
             self.__log_data_collect(log, event_id, user_id, request)
-            at_log(log)
+            at_log.at_log(log)
 
-    def delete(self, event_id, user_id, request = HttpRequest()):
+    def delete(self, event_id, user_id, request = None):
         log = {'event_action_code': self.LOG_ACTION_DELETE}
         self.__log_data_collect(log, event_id, user_id, request)
         try:
@@ -67,5 +67,5 @@ class ModelLog(models.Model):
             at_log(log)
             raise e
         else:
-            at_log(log)
+            at_log.at_log(log)
 
