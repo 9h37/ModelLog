@@ -1,0 +1,18 @@
+### Remote logging clone howto (for rsyslog atleast)
+#
+#
+# Client side:
+#   Just add "*.* @remote-server" in /etc/rsyslog.conf, where "remote-server"
+#   is a hostname (/etc/hosts) or an ip. "@" for udp, "@@" for tcp.
+#
+# Server side:
+#   It has to be set up for listening (few lines to uncomment in rsyslog.conf).
+# 
+# Notes:
+#   - *.* may be too permissive
+#   - No restriction on the host sending the messages (security vulnerability).
+#   - You will need to restart rsyslog if you edit /etc/rsyslog.conf or
+#   /etc/hosts (/etc/hosts too because it looks like it is cached by rsyslog).
+#   If "service rsyslog restart" fails like it does for me, try to reboot.
+#   Logging out and logging in might work too. Yeah it looks noobish.
+#
