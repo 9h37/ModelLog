@@ -3,6 +3,7 @@ from django.db import models
 from django.http import HttpRequest
 from django.conf import settings
 from datetime import datetime
+import logging
 import socket
 import at_log
 
@@ -35,11 +36,13 @@ class ModelLog(models.Model):
         log['instance_id'] = self.id
         try:
             log['instance_id_type'] = str(getattr(self, 'Meta').id_type)
-        except:
+        except AttributeError:
+            logging.warning('{0} has no meta id_type attribute'.format(type(self)))
             log['instance_id_type'] = 'unknown'
         if request is not None:
             log['access_point_ip'] = request.get_host()
         else:
+            logging.warning('unspecified access point ip')
             log['access_point_ip'] = 'unknown'
         return log
 

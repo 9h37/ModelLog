@@ -24,7 +24,7 @@ def at_log(log):
         'instance_id',          #5.5.6. Participant Object ID           required
         ):
         if key not in log.keys():
-            logging.warning(key + ' key missing in the log message')
+            logging.warning('{0} key missing in the log message'.format(key))
 
     log_keys = log.keys()
     log_keys.sort()
